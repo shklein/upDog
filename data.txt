@@ -1,0 +1,29 @@
+CREATE TABLE owners (
+	id SERIAL PRIMARY KEY,
+	first_name character varying (60),
+	last_name character varying (80)
+	);
+  CREATE TABLE pets (
+	id SERIAL PRIMARY KEY,
+	name character varying (60),
+	breed character varying (80),
+	color character varying (20),
+	owner_id integer REFERENCES owners
+	);
+  CREATE TABLE visits (
+	in_date date,
+	out_date date,
+	pet_id integer REFERENCES pets
+	);
+  ALTER TABLE owners	
+	ADD COLUMN pet_id integer REFERENCES pets;
+
+  INSERT INTO owners (
+	   VALUES (1, 'Quinn', 'Nelson'),
+			(2, 'Samantha', 'Klein')
+			);
+
+  INSERT INTO pets (
+	   VALUES (1, 'Billy', 'Golden Doodle', 'white', 1),
+			(2, 'Oscar', 'American Shorthair', 'orange', 2)
+			);

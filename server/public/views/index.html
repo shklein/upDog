@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Query Comrades</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../vendors/bootstrap.min.css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="../styles/main.css" media="screen" title="no title" charset="utf-8">
+    <script src="../vendors/jquery.min.js"></script>
+    <script src="../scripts/clientapp.js"></script>
+  </head>
+  <body>
+<div class="container">
+  <div class="row">
+  <h1>Owners and Pets</h1>
+  <a href="">Go to Visits</a>
+</div>
+<div class="row">
+  <h2>Owner Registration</h2>
+  <form class="owner">
+    <div class="col-md-5">
+    <label for="firstname">First Name:</label>
+    <input type="text" id="firstname" name="firstname" />
+  </div>
+  <div class="col-md-5">
+    <label for="lastname">Last Name:</label>
+    <input type="text" id="lastname" name="lastname" />
+  </div>
+  <button id="clientSubmit">Register</button>
+  </form>
+</div>
+<div class="row">
+  <h2>Pets</h2>
+  <form>
+    <div class="col-md-3">
+  <label for="owners">Owner Name:</label>
+  <select name="owners" id="owners"></select>
+</div>
+<div class="col-md-3">
+  <label for="petname">Pet Name:</label>
+  <input type="text" id="petname" name="petname" />
+  <label for="petcolor">Color:</label>
+  <input type="text" id="petcolor" name="petcolor" />
+</div>
+<div class="col-md-3">
+  <label for="petbreed">Breed:</label>
+  <input type="text" id="petbreed" name="petbreed" />
+</div>
+<div class="col-md-2">
+  <button id="addpet">Add Pet</button>
+</div>
+</form>
+</div>
+<div id="clientList">
+  </div>
+</div>
+  </body>
+</html>
