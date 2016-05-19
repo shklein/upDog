@@ -12,7 +12,7 @@ app.get('/pets', function (req, res) {
       res.sendState(500);
     }
 
-    client.query('SELECT * FROM pets', function (err, result) {
+    client.query("SELECT owners.first_name || ' ' || owners.last_name AS fullname, name, breed, color, owner_id FROM pets JOIN owners ON owners.id = pets.owner_id GROUP BY pets.owner_id, first_name, last_name, name, breed, color;", function (err, result) {
       done();
 
       console.log(result.rows);
@@ -27,13 +27,32 @@ app.get('/owners', function (req, res) {
       res.sendState(500);
     }
 
-    client.query('SELECT first_name, last_name FROM owners', function (err, result) {
+    client.query('SELECT first_name, last_name, id FROM owners', function (err, result) {
       done();
-
-      console.log(result.rows);
       res.send(result.rows);
     });
   });
+});
+
+app.post('/owners', function (req, res) {
+  pg.connect(connectionString, function (err, client, done){
+    if (err) {
+      res.sendState(500);
+    }
+    client.query("INSERT INTO owners (first_name, last_name) VALUES ('" + req.body.firstname + "', '"  + req.body.lastname + "')");
+    res.send('added');
+});
+});
+
+app.post('/pets', function (req, res) {
+  pg.connect(connectionString, function (err, client, done){
+    if (err) {
+      res.sendState(500);
+    }
+    console.log(req.body);
+    client.query("INSERT INTO pets (name, breed, color, owner_id) VALUES ('" + req.body.petname + "', '"  + req.body.petbreed + "', '" + req.body.petcolor + "', '" + req.body.owner_id + "')");
+    res.send('added');
+});
 });
 
 //Catch-all route

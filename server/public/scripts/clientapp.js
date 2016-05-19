@@ -5,8 +5,8 @@ getClient();
 //Add a client
   $('#clientSubmit').on('click', postClient);
 
-  // event listeners for Movies list
-  //$('#movieList').on('click', '.update', putMovie);
+  // event listeners for Client list
+  $('#addpet').on('click', addPet );
   //$('#movieList').on('click', '.delete', deleteMovie);
 });
 
@@ -22,11 +22,12 @@ getClient();
           $container = $('<div></div>');
 
           //Editable field
-          var clientData = ['name','breed', 'color'];
+          var clientData = ['fullname', 'name','breed', 'color'];
           clientData.forEach(function (prop) {
             var $el = $('<input type="text" id="' + prop + '" name="' + prop + '" />');
             $el.val(pet[prop]);
             $container.append($el);
+
           });
 
           $container.data('ownerID', pets.owner_id);
@@ -34,6 +35,7 @@ getClient();
           $container.append('<button class="delete">Delete</button>');
           $('#clientList').append($container);
         });
+        document.getElementById('fullname').readOnly = true;
       },
     });
   }
@@ -42,19 +44,20 @@ getClient();
   function postClient (event){
     event.preventDefault();
 
-    var client = {};
+    var owner = {};
 
     $.each($('.owner').serializeArray(), function (i, field) {
-      client[field.name] = field.value;
+      owner[field.name] = field.value;
     });
 
     $.ajax({
       type: 'POST',
       url: '/owners',
-      data: client,
+      data: owner,
       success: function (data) {
-          console.log(data);
+        getClient();
       }
+
     });
    };
 
@@ -65,9 +68,34 @@ getClient();
        url: '/owners',
        success: function (owners) {
          console.log(owners);
+         $('#owners').empty();
          for (var i = 0; i < owners.length; i++){
-         $('#owners').append('<option id="' + owners[i].first_name + owners[i].last_name + '">' + owners[i].first_name + ' ' + owners[i].last_name + '</option>');
+         $('#owners').append('<option id="' + owners[i].id + '">' + owners[i].first_name + ' ' + owners[i].last_name + '</option>');
+         console.log(owners[i].id);
        }
    }
  });
  }
+
+ //add a pets
+  function addPet (){
+    event.preventDefault();
+
+    var newPet = {};
+
+    $.each($('#pets').serializeArray(), function (i, field) {
+      newPet[field.name] = field.value;
+
+    });
+    newPet.owner_id = $('select :selected').attr('id');
+    console.log(newPet.owner_id);
+    $.ajax({
+      type: 'POST',
+      url: '/pets',
+      data: newPet,
+      success: function (data) {
+        console.log('added');
+        upDog();
+      }
+    })
+  }
