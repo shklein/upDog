@@ -6,21 +6,23 @@ var pg = require('pg');
 var connectionString = 'postgres://localhost:5432/mu';
 
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//Populate pets table
 app.get('/pets', function (req, res) {
   pg.connect(connectionString, function (err, client, done){
     if (err) {
       res.sendState(500);
     }
 
-    client.query("SELECT owners.first_name || ' ' || owners.last_name AS fullname, name, breed, color, owner_id FROM pets JOIN owners ON owners.id = pets.owner_id GROUP BY pets.owner_id, first_name, last_name, name, breed, color;", function (err, result) {
+    client.query("SELECT owners.first_name || ' ' || owners.last_name AS fullname, name, breed, color, owner_id, pets.id FROM pets JOIN owners ON owners.id = pets.owner_id GROUP BY pets.owner_id, first_name, last_name, name, breed, color, pets.id;", function (err, result) {
       done();
 
-      console.log(result.rows);
       res.send(result.rows);
     });
   });
 });
 
+//Populate select
 app.get('/owners', function (req, res) {
   pg.connect(connectionString, function (err, client, done){
     if (err) {
@@ -34,6 +36,7 @@ app.get('/owners', function (req, res) {
   });
 });
 
+//Add owner
 app.post('/owners', function (req, res) {
   pg.connect(connectionString, function (err, client, done){
     if (err) {
@@ -44,6 +47,7 @@ app.post('/owners', function (req, res) {
 });
 });
 
+//Add pet
 app.post('/pets', function (req, res) {
   pg.connect(connectionString, function (err, client, done){
     if (err) {
@@ -54,6 +58,62 @@ app.post('/pets', function (req, res) {
     res.send('added');
 });
 });
+
+//Put pet
+app.put('/pets/:id', function (req, res) {
+   var id = req.params.id;
+   var pet = req.body;
+
+   pg.connect(connectionString, function (err, client, done) {
+     if (err) {
+      res.sendStatus(500);
+     }
+
+    client.query('UPDATE pets ' +
+                       'SET name = $1, ' +
+                   'breed = $2, ' +
+                   'color = $3' +
+                  'WHERE pets.id = $4',
+                   [pet.name, pet.breed, pet.color, id],
+                  function (err, result) {
+                    done();
+
+                    if (err) {
+                      res.sendStatus(500);
+                                            return;
+                    }
+
+                    res.sendStatus(200);
+                  });
+   });
+ });
+
+// //Delete pet
+ app.delete('/pets/:id', function (req, res) {
+  var id = req.params.id;
+   console.log(id);
+   pg.connect(connectionString, function (err, client, done) {
+     if (err) {
+       console.log(err);
+      res.sendStatus(500);
+     }
+
+    client.query('DELETE FROM pets ' +
+                   'WHERE pets.id = $1',
+                   [id],
+                   function (err, result) {
+                     done();
+
+                     if (err) {
+                      console.log(err);
+                      res.sendStatus(500);
+                      return;
+                   }
+
+                   res.sendStatus(200);
+                  });
+   });
+ });
 
 //Catch-all route
 app.get('/*', function (req, res) {

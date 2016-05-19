@@ -7,8 +7,11 @@ getClient();
 
   // event listeners for Client list
   $('#addpet').on('click', addPet );
-  //$('#movieList').on('click', '.delete', deleteMovie);
+  $('#clientList').on('click', '.delete', deletePet);
+  $('#clientList').on('click', '.update', putPet);
 });
+
+//**FUNCTIONS**
 
 //Pet List to DOM
   function upDog() {
@@ -19,7 +22,7 @@ getClient();
         console.log(pets);
         $('#clientList').empty();
         pets.forEach(function (pet) {
-          $container = $('<div></div>');
+          $container = $('<div class ="' + pet.id + '" ></div>');
 
           //Editable field
           var clientData = ['fullname', 'name','breed', 'color'];
@@ -27,6 +30,7 @@ getClient();
             var $el = $('<input type="text" id="' + prop + '" name="' + prop + '" />');
             $el.val(pet[prop]);
             $container.append($el);
+
 
           });
 
@@ -77,7 +81,7 @@ getClient();
  });
  }
 
- //add a pets
+ //Add a pet
   function addPet (){
     event.preventDefault();
 
@@ -99,3 +103,57 @@ getClient();
       }
     })
   }
+
+  function getPetId(button) {
+    // get the pet ID
+    var petId = button.parent().attr('class');
+    console.log('getPetId', petId);
+    return petId;
+  }
+
+  //Delete a pet
+  function deletePet(event) {
+  event.preventDefault();
+
+ var petId = getPetId($(this));
+
+
+  $.ajax({
+    type: 'DELETE',
+    url: '/pets/' + petId,
+    success: function (data) {
+      upDog();
+    },
+  });
+}
+function dataPrep(button) {
+  // get the pet data
+  var pet = {};
+  console.log(button.parent().children());
+  console.log(button.parent().children().serializeArray());
+  $.each(button.parent().children().serializeArray(), function (i, field) {
+  pet[field.name] = field.value;
+  });
+
+
+
+  return pet;
+}
+
+
+//Update a pet
+function putPet(event) {
+  event.preventDefault();
+
+  var preparedData = dataPrep($(this));
+  var petId = getPetId($(this));
+
+  $.ajax({
+    type: 'PUT',
+    url: '/pets/' + petId,
+    data: preparedData,
+    success: function (data) {
+      upDog();
+    },
+  });
+}
